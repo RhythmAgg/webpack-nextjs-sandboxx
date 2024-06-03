@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Webpack-nextjs-bundle Analyzer Sandbox
+This sandbox is meant to analyze the webpack bundling performed in nextJS when running `npm run build` and try to resolve the issues with code minification and tree shaking.
+/
+The code structure includes the main file  `page.js` which imports `./Components.js` module/
+`page.js`
 ```
+import styles from "./page.module.css";
+import { Rectangle } from "./Components";
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+export default function Home() {
+  return (
+    <>
+      {/* <Rectangle /> */}
+      <h1>This is home</h1>`
+    </>
+  )
+}
+```
+And `Components.js`
+```
+"use client"
+import styles from './page.module2.css'
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+export function Cube() {
+  retunrn {...}
+}
 
-## Learn More
+export function Rectangle() {
+  return {...}
+}
 
-To learn more about Next.js, take a look at the following resources:
+```
+I have made sure that nextJS default webpack config in production mode has usedEffects as true and have tried enabling sideEffects property too.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Current Issues
+- **Actual Behavior**
+On importing only `Rectangle` into the code but not using it, The entire `Components.js` module is included in the client bundle.
+On using `Rectangle` in the code, The `Cube` component gets removed from the bundle.
+- **Expected behavior** The components should not be included in the bundle when not used in the code, hence `Cube` should be excluded in both the cases
